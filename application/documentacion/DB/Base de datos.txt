@@ -1,0 +1,72 @@
+ADMIN:
+
+In/Habilitar canchas
+In/Habilitar canchas por torneo
+	Al habilitar -> lista de espera (ver interval)
+ABM Canchas
+	Alta
+		numero
+		superficie
+		luz
+		habilitadaTorneo
+	Modificación
+		numero
+		superficie
+		luz
+		habilitadaTorneo
+Cancelar un turno
+Modificar hora a la que se prende la luz
+
+
+Socio
+	idSocio
+	nombre
+	apellido
+	penalizado
+	estado
+	fechaAlta
+	fechaBaja
+	fechaUltimaMod
+
+Cancha
+	idCancha
+	numero
+	superficie
+	estado
+	luz
+	habilitadaParaTorneo (?)
+	fechaAlta
+	fechaBaja
+	fechaUltimaMod
+
+Turno
+	idTurno
+	idCancha
+	fecha
+	horaInicio
+	horaFin
+	idSocioAnfitrion
+	luz
+	tipoPartido
+	estado
+	fechaAlta
+	fechaBaja
+	fechaUltimaMod
+
+SociosPorTurno
+	idTurno
+	idSocio
+
+Club
+	(parametros)
+
+
+Penalizaciones
+	idPenalizacion
+	idSocio
+	idTurno
+	fechaInicio
+	fechaFin
+	fechaAlta
+	fechaBaja
+	fechaUltimaMod

@@ -1,0 +1,229 @@
+@import "core.less";
+
+/*############################# GRALES ##################################### */
+@blanco : #FFF;
+@negro	: #000;
+@bordo	: #64061e;
+@gris1	: #959595;
+@gris2	: #f4f4f4;
+@gris3	: #E4E4E4;
+
+body{background: url(../img/bg.png) repeat;}
+ul{
+	list-style:none;
+	-webkit-margin-before: 0em;
+	-webkit-margin-after: 0em;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 0px;
+}
+#divContainer {width: 100%;}
+
+
+div#homeScreen{
+	margin-top:4em;
+	div#logoClub img{
+		width : 20em;
+		height:auto;
+	}
+	ul#homeNavBar{
+		width:18em;
+		li { margin-bottom:.9em; }
+	}
+}
+
+
+
+
+/*############################# CANCHAS ##################################### */
+@anchoCancha: 360px;
+@altoCancha: 198px;
+@anchoFleje: 4px;
+
+@anchoMitad: (@anchoCancha - (@anchoFleje * 3)) / 2;
+@altoMitad: (@altoCancha - (@anchoFleje * 2));
+@altoParalela: (@altoCancha - (@anchoFleje * 4)) * 0.15;
+@altoCentro: (@altoCancha - (@anchoFleje * 4)) * 0.7;
+@anchoCuadrante: @anchoMitad / 2;
+@altoCuadrante: @altoCentro / 2;
+
+.polvo {background: url(../img/bg_polvo.png);}
+.cemento {background: url(../img/bg_cemento.png);}
+.cesped {background: url(../img/bg_cesped.png);}
+
+
+.canchaFrame{
+	width: @anchoCancha + @anchoFleje;
+	min-height:291px;
+	position:relative;
+	margin:.4em;
+	.cu-pointer;
+	.fl-left;
+	.libre{
+		.box-outer-shadow(0px,0px,25px,0px,rgba(255,255,255,0.7));
+	}
+	.cancha.tenis {
+		background-color:@blanco;
+		clear:both;
+		position:relative;
+		.border(@gris1, solid, 3px);
+		width: @anchoCancha;
+		height: @altoCancha;
+		.mitad {
+			width: @anchoMitad;
+			height: @altoMitad;
+			.border(#FFF, solid, @anchoFleje);
+			.paralela {
+				height: @altoParalela;
+			}
+			.paralela.superior {
+				.border(bottom, #FFF, solid, @anchoFleje);
+			}
+			.paralela.inferior {
+				.border(top, #FFF, solid, @anchoFleje);
+			}
+			.centro {
+				height: @altoCentro;
+				span.numeroCancha{
+					margin:0 auto;
+					display:inline-block;
+					.fl-right();
+					width: @anchoCuadrante*0.95;
+					.al-center;
+					font-size:@altoCentro*0.6;
+					color:rgba(255,255,255,0.5);
+				}
+				.cuadrante {
+					width: @anchoCuadrante;
+					height: @altoCuadrante;
+				}
+				.cuadrante.superior {
+					.border(bottom, #FFF, solid, @anchoFleje);
+				}
+			}
+		}
+		.mitad.izquierda {
+			.border(right, #FFF, solid, @anchoFleje / 2);
+			.centro {
+				.cuadrante {
+					.border(left, #FFF, solid, @anchoFleje);
+				}
+			}
+		}
+		.mitad.derecha {
+			.border(left, #FFF, solid, @anchoFleje / 2);
+			.centro {
+				.cuadrante {
+					.border(right, #FFF, solid, @anchoFleje);
+				}
+			}
+		}
+		
+	}
+	.player{			
+			position:absolute;
+			z-index:1;
+			height:@altoCancha*0.1;
+			padding-top:.125em  ; padding-bottom:.125em;
+			background: @blanco url(../img/ball.png) no-repeat;		
+			background-size:@altoCancha*0.1;
+			width:(@anchoCancha/2)*0.8;
+			.border(@gris1 , 2px , solid);
+			.box-outer-shadow(0px,0px,15px,0px,rgba(255,255,255,0.7));
+			overflow:hidden;
+			span.pos{
+				font-size:.9em;
+				.bold();
+				color:@bordo;
+				padding-right:.125em;
+			}
+			span.name{
+				position:absolute;
+				width:95%;
+				font-size:.9em;				
+				font-weight:500;
+			}
+		}
+		#p1 , #p3{
+			background-position:left;
+			padding-left:@altoCancha*0.11;
+			.al-left();
+			.border-radius(0px , 8px , 8px , 0px);
+			.border(left , @gris1 , 2px , none);
+			left:0;
+		}
+		#p2 , #p4{
+			background-position:right;
+			padding-right:@altoCancha*0.11;
+			.al-right();
+			.border-radius(8px , 0px , 0px , 8px);
+			.border(right , @gris1 , 2px , none);
+			right:0;
+		}
+		#p1 , #p4{
+			top: (@altoCancha/2)*0.5;
+		}
+		#p3 , #p2{
+			bottom:(@altoCancha/2)*0.9;
+		}
+	.proxTurno{
+		position:relative;
+		right:.175em;
+		.al-right();
+		div.title{
+			.fl-left();
+		}
+		div.time{
+			.fl-left();
+			font-size:1.6em;
+			.bold();
+			background:@blanco;
+			.border-radius(0.375em,0.375em,0,0);
+			.border(@gris1 , 3px , solid);
+			.border(bottom , @gris1 , 0px , none);
+			padding-left:.175em; padding-right:.175em;
+			
+		}
+	}
+	.marquee{
+		span.title{
+			.bold();
+		}
+		span.content{
+			.semi-bold();
+		}
+		font-size:.9em;
+		max-width:@anchoCancha;
+		max-height:20px;
+		margin:.4em auto;
+		overflow:hidden;
+		padding-left:.4em; padding-right:.4em;
+		padding-top:.2em; padding-bottom:.2em;
+		background:@bordo;
+		.vertical-gradient(rgba(166,0,38,1) , 0 , rgba(113,5,31,1) , 50);
+		.border-radius(0.375em,0.375em,0.375em,0.375em);
+		color:@blanco;
+	}
+	.proxTurno{
+		span.hora{
+			background:@blanco;
+			margin-left:.125em;
+			font-size:1.5em;
+			letter-spacing:.05em;
+			.bold();
+			.border-radius(8px,8px,0px,0px);
+			.border(@gris1 , 3px , solid);
+			.border(bottom , @gris1 , 0px , none);
+			padding-left:.125em;
+			padding-right:.125em;
+		}
+	}
+}
+
+
+
+
+
+
+
+

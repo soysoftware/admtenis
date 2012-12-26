@@ -1,0 +1,68 @@
+Reglas:
+******
+-No se debe poder anotar en un turno alguien que ya está en lista de espera y viceversa.
+	Esto se debe a que puede pasar que a esa persona el sistema lo asigne a jugar justo cuando le toca terminar su otro partido,
+	y el tipo no tendría tiempo de enterarse que le toca jugar a continuación ni tiempo de hacer el check-in
+
+
+Parámetros generales:
+********************
+
+Id Cliente (club)
+Posibilidad de acceso remoto (para los socios)
+Tiempo límite de inactividad de pantalla (para hacer logout)
+Tipo de entrada optimizada (Teclado, mouse, touch)
+Permitir ver detalle de las canchas (sí o no)
+Intervalo de refresh (en el que se ejecutan las tareas programadas. Default 1 min)
+Publicidad Habilitada
+Administrador puede cancelar turnos
+
+*(parametro para nuestra tabla de clientes) Sistema activado (por si no pagan)
+
+
+Parámetros para confirmar:
+*************************
+
+Habilitar penalizaciones
+Tolerancia de cancelación sin penalización
+Días de penalización
+
+
+
+Parámetros para cancelar:
+*************************
+
+Habilitar penalizaciones
+Días de penalización
+
+Con check-in o no
+
+Tiempo check-in
+Tiempo tolerancia
+
+
+
+Parámetros para reservar:
+************************
+
+Hora inicio día
+Hora fín día
+Con lista de espera por torneo
+
+Cantidad de reservas simultáneas
+Cantidad de partidos por día por persona
+Habilitar penalizaciones
+Tolerancia de cancelación sin penalización
+Días de penalización
+
+Puede elegir cualquier horario (0 = No -sólo el próximo-, 1 = Si, 2 = Custom -a partir de X hora-)
+Hora a partir de la cual puede elegir cualquier horario
+
+Mínimo duración turno single (expresado en cantidad de fracciones?)
+Máximo duración turno single (expresado en cantidad de fracciones?)
+Mínimo duración turno doble (expresado en cantidad de fracciones?)
+Máximo duración turno doble (expresado en cantidad de fracciones?)
+Duración fracción
+
+Hora a partir de la cual se prende la luz (sirve para saber si da con luz o sin luz -cambia en invierno y verano-)
+Luz opcional u obligatoria (por defecto con luz si es más de la "hora luz")
