@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Clase para el tipo de dato Objeto. Hereda de Type
  */
