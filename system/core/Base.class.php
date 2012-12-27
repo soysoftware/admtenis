@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Lucas Ceballos
+ * @author Leandro Marty
  * @since 11/02/2012
  * @version 1.5.1
  */
