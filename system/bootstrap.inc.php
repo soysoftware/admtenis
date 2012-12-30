@@ -27,7 +27,7 @@
 	
 	# Auto Loaders
 	spl_autoload_register(function($class){
-		$file = SYSDIR . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . str_replace('_', '/', $class) . '.class.php';
+		$file = SYSDIR . DIRECTORY_SEPARATOR . str_replace('_', '/', $class) . '.class.php';
 		if (file_exists($file)){
 			@include_once $file;
 		}
@@ -39,7 +39,10 @@
 		}
 	});
 	
-	# Bases de datos
+	# Clase Config
+	Core_Config::init($config);
 	
+	# Bases de datos
+	Core_Modules_DB_Loader::load(0);
 	
 ?>
