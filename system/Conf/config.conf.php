@@ -6,14 +6,14 @@
 	# Environment
 	$config['env'] = 'dev'; // dev = development | tst = testing | prod = produccion
 	# Bases de datos
-	$config['dbs']['autoConnect'] = true;
+	$config['dbAutoConnect'] = true;
 	$config['dbs'][0]['driver'] = 'mysqli';
 	$config['dbs'][0]['autoConnect'] = true;
 	$config['dbs'][0]['host'] = 'localhost';
 	$config['dbs'][0]['user'] = 'root';
 	$config['dbs'][0]['pass'] = 'Graciela';
-	$config['dbs'][0]['port'] = 3306;
-	$config['dbs'][0]['encoding'] = 'utf8';
+	$config['dbs'][0]['database'] = 'admtenis';
+	$config['dbs'][0]['charset'] = 'utf8';
 		
 	define('DB_HOST', 'localhost');
 	define('DB_USER', 'root');

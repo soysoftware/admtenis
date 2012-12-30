@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Leandro Marty
+ * @author Lucas Ceballos
  * @since 11/02/2012
  * @version 1.5.1
  */
@@ -113,7 +113,7 @@ abstract class Core_Base {
 		return $array;
 	}
 
-	//Getters
+	// Getters
 
 	/**
 	 * Retorna el ID del objeto
@@ -125,7 +125,6 @@ abstract class Core_Base {
 		$pkName = static::_primaryKeyName;
 		return $this->$pkName;
 	}
-
 
 	/**
 	 * Arma un array con el nombre de la PrimaryKey y el value de la misma
@@ -368,9 +367,6 @@ abstract class Core_Base {
 		return $values;
 	}
 
-	public static function expose(){
-		return get_class_vars(get_called_class());
-	}
 }
 
 ?>

@@ -4,7 +4,7 @@
  * Clase constraint MinLength
  */
 
-abstract class Constraint_MinLength extends Constraint_Constraint {
+abstract class Type_Constraint_MinLength extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

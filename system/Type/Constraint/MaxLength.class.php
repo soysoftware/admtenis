@@ -4,7 +4,7 @@
  * Clase constraint MaxLength
  */
 
-abstract class Constraint_MaxLength extends Constraint_Constraint {
+abstract class Type_Constraint_MaxLength extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

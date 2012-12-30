@@ -9,12 +9,7 @@
 
 abstract class Core_TypedObject extends Core_Base {
 	
-	protected static $__descriptor;
-	
 	public function __construct($idObj = null, $readOnly = false){
-		//if ( !is_array(static::$__descriptor) ) {
-			$this->createDescriptor();
-		//}
 		$this->createAttributes();
 		parent::__construct($idObj, $readOnly);
 	}	
@@ -30,19 +25,14 @@ abstract class Core_TypedObject extends Core_Base {
 	 * @return mixed
 	 */
 	public function __get($name) {
-		if ( method_exists($this, 'get' . ucfirst($name)) ) {
+		if ( method_exists($this, $method = 'get' . ucfirst($name)) ) {
 			return $this->$method();
 		}
-		$name = property_exists($this, '_' . $name) ? '_' . $name : property_exists($this, '__' . $name) ? '__' . $name : false;
+		$name = property_exists($this, '_' . $name) ? '_' . $name : ( property_exists($this, '__' . $name) ? '__' . $name : false );
 		if ( !$name ) {
 			throw new Exception_InternalSecurityException('No existe la propiedad ' . $name . ' o el metodo para accederla');
 		}
 		return Type_Type::isTyped($this->$name) ? $this->$name->val : $this->val;
-	}
-	
-	protected function getId(){
-		$pkName = static::_primaryKeyName;
-		return Type_Type::isTyped($this->$pkName) ? $this->$pkName->val : $this->$pkName; 
 	}
 	
 	public function __set($name, $value) {
@@ -57,11 +47,22 @@ abstract class Core_TypedObject extends Core_Base {
 		} else {
 			return Type_Type::isTyped($this->$name) ? $this->$name->val = Core_DBI::getInstance()->realEscapeString($value) : $this->$name = Core_DBI::getInstance()->realEscapeString($value);
 		}
-	}
+	}	
 	
+	// Setters
 	protected function setId($value){
 		$pkName = static::_primaryKeyName;
 		return Type_Type::isTyped($this->$pkName) ? $this->$pkName->val = $value : $this->$pkName = $value;
+	}
+	
+	// Getters
+	protected function getId(){
+		$pkName = static::_primaryKeyName;
+		return Type_Type::isTyped($this->$pkName) ? $this->$pkName->val : $this->$pkName; 
+	}
+	
+	protected function getDescriptor(){
+		return Core_Descriptor::get(get_class($this));
 	}
 	
 	/**
@@ -71,39 +72,22 @@ abstract class Core_TypedObject extends Core_Base {
 	 * @return void
 	 */
 	protected final function createAttributes() {		
-		foreach ( static::$__descriptor as $attrName => $attrConfig) {
+		foreach ( $this->descriptor as $attrName => $attrConfig) {
 			if ( isset($attrConfig['Type']) ) {
 				$typeClass = Type_Type::PREFIX . $attrConfig['Type'];
 				if ( class_exists($typeClass) ) {
 					if ( isset($attrConfig['Constraints']['ReferenceValue']) ) {
 						$attrConfig['Constraints']['ReferenceValue'] = &$this->$attrConfig['Constraints']['ReferenceValue'];
 					}
-					$this->$attrName = new $typeClass( isset($attrConfig['Constraints']) ? $attrConfig['Constraints'] : null );
+					if ( $typeClass == 'Type_ObjectList') {
+						$attrConfig['Constraints']['FromClass'] = get_class($this);
+					}
+					$arg = isset($attrConfig['Constraints']) ? $attrConfig['Constraints'] : null;
+					$this->$attrName = new $typeClass($arg);
 				}
 			}
 		}
-	}
-	
-	protected final function createDescriptor() {
-		static::$__descriptor = array();
-		$reflectionObject = new ReflectionObject($this);
-		foreach($reflectionObject->getProperties() as $reflectionProperty) {
-			foreach ( $this->docCommentToArray($reflectionProperty->getDocComment()) as $commentLine ) {
-				$commentLine = explode(' ' , $commentLine);
-				if ( preg_match('/type/i', $commentLine[0]) ) {
-					static::$__descriptor[$reflectionProperty->name]['Type'] = $commentLine[1];
-				}
-				if ( preg_match('/constraint/i', $commentLine[0]) ) {
-					static::$__descriptor[$reflectionProperty->name]['Constraints'][$commentLine[1]] = isset($commentLine[2]) ? $commentLine[2] : true;
-				}
-			}
-		}
-	}
-	
-	protected final function docCommentToArray($docComment){
-		return preg_split('/@/', preg_replace(array('/\*/' , '/\//' , '/\\t/' , '/\s*(\\r)?\\n\s*/') , '' , $docComment) , -1, PREG_SPLIT_NO_EMPTY);
-	}
-	
+	}	
 	
 } 
 

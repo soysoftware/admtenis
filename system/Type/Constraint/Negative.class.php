@@ -4,7 +4,7 @@
  * Clase constraint Negative
  */
 
-abstract class Constraint_Negative extends Constraint_Constraint {
+abstract class Type_Constraint_Negative extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *

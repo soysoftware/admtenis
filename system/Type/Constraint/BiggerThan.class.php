@@ -4,7 +4,7 @@
  * Clase constraint BiggerThan
  */
 
-abstract class Constraint_BiggerThan extends Constraint_Constraint {
+abstract class Type_Constraint_BiggerThan extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *

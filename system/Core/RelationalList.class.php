@@ -5,27 +5,26 @@
  * @version 0.0.1
  */
 
-class Core_RelationalList {
-	const 	NO_ACTION = 0;
-	const 	INSERT_ACTION = 1;
-	const 	DELETE_ACTION = 2;
+class Core_RelationalList extends Core_RelationalBase{
 	
-	private	$_array = null;
-	private $objectClass;
+	private $referenceValue;
+	private	$_list;
 
-	public function __construct($objectClass, Array $fatherPrimaryKeyArray){
-		$this->objectClass = $objectClass;
-		$this->_array = array();
-		$this->fill($fatherPrimaryKeyArray);
+	public function __construct($fromClass, $toClass, $referenceValue) {
+		parent::__construct($fromClass, $toClass);
+		$this->referenceValue = $referenceValue;
 	}
-
+	
 	/**
 	 * @ignore
 	 *
 	 * @return array
 	 */
-	public function getArray(){
-		return $this->_array;
+	public function getList(){
+		if ( !isset($this->_list) ){
+			$this->fill();
+		}
+		return $this->_list;
 	}
 
 	/**
@@ -35,23 +34,27 @@ class Core_RelationalList {
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function add(Core_RelationalObject $object){
-    	//Seteo el action en INSERT ya que estoy dentro de un add
-    	$object->action = self::INSERT_ACTION;
-    	//Verifico si el objeto relacional ya se encuentra dentro de la lista
-    	if($pos = $this->find($object)){
-    		//El objeto existe, resuelvo segun el action que tenga el objeto existente
-    		switch($this->_array[$pos]->action){
-    			case self::DELETE_ACTION:
-    				//El objeto esta marcado para borrar, lo marco con NO_ACTION
-    				$this->_array[$pos]->action = self::NO_ACTION;
-    				break;
-    		}
-    	} else {
-    		//No existe, lo inserto con action INSERT ya que es un objeto relacional nuevo
-    		$this->_array[] = $object;
-    	}
-    	return true;
+	public function add(&$object){
+		if ( $this->checkObject($object) ) {	
+	    	//Verifico si el objeto relacional ya se encuentra dentro de la lista
+	    	if($pos = $this->find($object)){
+	    		//El objeto existe, resuelvo segun el action que tenga el objeto existente
+	    		switch($this->_list[$pos]->action){
+	    			case self::DELETE_ACTION:
+	    				//El objeto esta marcado para borrar, lo marco con NO_ACTION
+	    				$this->_list[$pos]->action = self::NO_ACTION;
+	    				break;
+	    		}
+	    	} else {
+	    		//No existe, lo creo e inserto con action INSERT ya que es un objeto relacional nuevo
+		    	$relationalObject = new Core_RelationalObject($this->fromClass, $this->toClass);
+		    	$relationalObject->{$this->toPrimaryKeyName} = $object->id;
+		    	$relationalObject->{$this->fromPrimaryKeyName} = $this->referenceValue;
+	    		$relationalObject->action = self::INSERT_ACTION;
+	    		$this->_list[] = $relationalObject;
+	    	}
+	    	return true;
+		}
 	}
 
 	/**
@@ -61,23 +64,25 @@ class Core_RelationalList {
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function remove(Core_RelationalObject $object){
-		if(($pos = $this->find($object)) !== false){ //Pongo el "=== false" porque puede que el FIND devuelva "0" (posición 0), y "0" es == false
-			// El objeto existe, resuelvo segun el action que tenga el objeto existente
-			switch($this->_array[$pos]->action){
-				case self::INSERT_ACTION:
-					// El objeto relacional esta para insertarse, no existe fisicamente aun
-					unset($this->_array[$pos]);
-					break;
-				case self::NO_ACTION:
-					// El objeto relacional ya esta creado fisicamente y no tiene modificaciones, lo marco para borrar
-					$this->_array[$pos]->action = self::DELETE_ACTION;
-					break;	
+	public function remove(&$object){
+		if ( $this->checkObject($object) ) {
+			if(($pos = $this->find($object)) !== false){ //Pongo el "=== false" porque puede que el FIND devuelva "0" (posición 0), y "0" es == false
+				// El objeto existe, resuelvo segun el action que tenga el objeto existente
+				switch($this->_list[$pos]->action){
+					case self::INSERT_ACTION:
+						// El objeto relacional esta para insertarse, no existe fisicamente aun
+						unset($this->_array[$pos]);
+						break;
+					case self::NO_ACTION:
+						// El objeto relacional ya esta creado fisicamente y no tiene modificaciones, lo marco para borrar
+						$this->_list[$pos]->action = self::DELETE_ACTION;
+						break;	
+				}
+				return true;
+			} else {
+				// El objeto relacional no existe, por lo tanto no puedo borrarlo
+				return false;
 			}
-			return true;
-		} else {
-			// El objeto relacional no existe, por lo tanto no puedo borrarlo
-			return false;
 		}
 	}
 
@@ -87,9 +92,9 @@ class Core_RelationalList {
 	 * @param Core_RelationalObject $object
 	 * @return mixed
 	 */
-	private function find(Core_RelationalObject $object){
+	private function find(&$object){
 		foreach ($this->_array as $key => $value){
-			if($object == $value){
+			if($object->id == $value->{$this->toPrimaryKeyName}){
 				return $key;
 			}
 		}
@@ -104,16 +109,31 @@ class Core_RelationalList {
 	 * @param array $whereArray
 	 * @throws Exception_MysqlException
 	 */
-	public function fill(Array $whereArray){
-		$objectClass = $this->objectClass;
-		$query = Core_DBI::getSingleSelectQuery($objectClass::_table, array( trim($objectClass::_primaryKeyName,'_') => null) , $whereArray);
+	public function fill(){
+		$query = Core_DBI::getSingleSelectQuery($this->tableName(), $this->columnsNames() , $this->whereArray());
 		if(!$result = Core_DBI::getInstance()->query($query)){
 			throw new Exception_MysqlException('Error en consulta MySQL para crear llenar relationalList con objetos de clase ' . $objectClass . ' | MySQL Error: ' . Core_DBI::getInstance()->error() . ' | Query: ' . $query);
 		}
+		$i = 0;
 		while($row = Core_DBI::getInstance()->fetchAssoc($result)){
 			//Agrego los objetos sin comprobación ya que estoy inicializando el array
-			$this->_array[] = new $objectClass($row[$objectClass::_primaryKeyName]);
+			$this->_list[$i] = new Core_RelationalObject($this->fromClass, $this->toClass);
+			$this->_list[$i]->{$this->fromPrimaryKeyName} = $row[trim($this->fromPrimaryKeyName, '_')];
+			$this->_list[$i]->{$this->toPrimaryKeyName} = $row[trim($this->toPrimaryKeyName, '_')];
+			$i++;
 		}
+	}
+	
+	private function columnsNames(){
+		return array ( trim($this->toPrimaryKeyName, '_') => true, trim($this->fromPrimaryKeyName, '_') => true);
+	}
+	
+	private function tableName(){
+		return $this->toClass . self::TABLE_GLUE . $this->fromClass;
+	}
+	
+	private function whereArray(){
+		return array( trim($this->fromPrimaryKeyName, '_') => Type_Type::isTyped($this->referenceValue) ? $this->referenceValue->val : $this->referenceValue);
 	}
 
 	/**
@@ -122,7 +142,7 @@ class Core_RelationalList {
 	 * @return boolean
 	 */
 	public function save(){
-		foreach($this->_array as $key => $object){
+		foreach($this->_list as $key => $object){
 			switch ($object->action) {
 				case self::INSERT_ACTION:
 					$result = $object->save();
@@ -133,6 +153,14 @@ class Core_RelationalList {
 			}
 		}
 		return isset($result) ? $result : true;
+	}
+	
+	private function checkObject(&$object){
+		// Chequeo la clase del objeto enviado
+		if ( get_class($object) != $this->toClass ) {
+			throw new Exception_InternalSecurityException('Objeto invalido');
+		}
+		return true;
 	}
 
 }

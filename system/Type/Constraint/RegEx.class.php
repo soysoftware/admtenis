@@ -4,7 +4,7 @@
  * Clase constraint RegEx
  */
 
-abstract class Constraint_RegEx extends Constraint_Constraint {
+abstract class Type_Constraint_RegEx extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

@@ -90,7 +90,7 @@ abstract class Type_Type {
 	private function validateConstraints($val) {
 		if ( is_array($this->constraints) ) {
 			foreach ( $this->constraints as $constraintName => $constraintValue ) {
-				$constraint = Constraint_Constraint::PREFIX . $constraintName;
+				$constraint = Type_Constraint_Constraint::PREFIX . $constraintName;
 				$constraint::check($val, $constraintValue);
 			}
 		}

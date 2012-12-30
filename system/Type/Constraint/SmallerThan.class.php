@@ -4,7 +4,7 @@
  * Clase constraint SmallerThan
  */
 
-abstract class Constraint_SmallerThan extends Constraint_Constraint {
+abstract class Type_Constraint_SmallerThan extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

@@ -4,7 +4,7 @@
 	define('ROOTDIR', ($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . current(explode(DIRECTORY_SEPARATOR, ltrim(str_ireplace($_SERVER['DOCUMENT_ROOT'], '', __FILE__),DIRECTORY_SEPARATOR), -1))));
 	
 	# Archivo de configuracion
-	$configFile = SYSDIR . '/conf/config.conf.php';
+	$configFile = SYSDIR . '/Conf/config.conf.php';
 	if (!file_exists($configFile)){
 		die('No se ha encontrado el archivo de configuración');
 	}
@@ -43,6 +43,12 @@
 	Core_Config::init($config);
 	
 	# Bases de datos
-	Core_Modules_DB_Loader::load(0);
+	if (Core_Config::getVal('dbAutoConnect')){
+		foreach( Core_Config::getVal('dbs') as $dbName => $dbConfig ){
+			if (isset($dbConfig['autoConnect']) && $dbConfig['autoConnect']){
+				Core_Modules_DB_Loader::load($dbName);
+			}
+		}
+	}
 	
 ?>

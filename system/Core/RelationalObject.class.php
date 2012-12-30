@@ -5,13 +5,24 @@
  * @version 0.0.1
  */
 
-class Core_RelationalObject extends Core_Base {
-	private $_action = 0;
+class Core_RelationalObject extends Core_RelationalBase {
+	
+	private $_action = self::NO_ACTION;
+	private $_object;
 
-	public function __construct($idObj = null){
-		parent::__construct($idObj);
+
+	public function __construct($fromClass,  $toClass){
+		parent::__construct($fromClass, $toClass);
 	}
-
+	
+	public function getObject(){
+		if ( !isset($this->_object) ) {
+			// Creamos el objeto en solo lectura
+			$this->_object = new $this->toClass($this->{$this->toPrimaryKeyName}, true);
+		}
+		return $this->_object; 
+	}
+	
 	/**
 	 * @ignore
 	 *
@@ -28,8 +39,20 @@ class Core_RelationalObject extends Core_Base {
 	 * @return Core_RelationalObject
 	 */
 	protected function setAction($action){
+		// Chequeamos que el action enviado sea valido
+		if ( !preg_match('/' . self::DELETE_ACTION . '|' . self::INSERT_ACTION . '|' . self::NO_ACTION . '/', $action) ) {
+			throw new Exception_InternalSecurityException('El action enviado no es válido');
+		}
 		$this->_action = $action;
 		return $this;
+	}
+	
+	public function save(){
+		return true;
+	}
+	
+	public function delete(){
+		return true;
 	}
 }
 

@@ -4,7 +4,7 @@
  * Clase constraint NotZero
  */
 
-abstract class Constraint_NotZero extends Constraint_Constraint {
+abstract class Type_Constraint_NotZero extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

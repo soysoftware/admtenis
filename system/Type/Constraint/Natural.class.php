@@ -4,7 +4,7 @@
  * Clase constraint Natural
  */
 
-abstract class Constraint_Natural extends Constraint_Constraint {
+abstract class Type_Constraint_Natural extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 

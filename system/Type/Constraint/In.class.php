@@ -4,7 +4,7 @@
  * Clase constraint In
  */
 
-abstract class Constraint_In extends Constraint_Constraint {
+abstract class Type_Constraint_In extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *

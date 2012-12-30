@@ -4,7 +4,7 @@
  * Clase constraint Even
  */
 
-abstract class Constraint_Even extends Constraint_Constraint {
+abstract class Type_Constraint_Even extends Type_Constraint_Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
