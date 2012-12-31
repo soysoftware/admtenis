@@ -11,7 +11,9 @@ abstract class Core_TypedObject extends Core_Base {
 	
 	public function __construct($idObj = null, $readOnly = false){
 		$this->createAttributes();
+		Type_Type::disableValidations();
 		parent::__construct($idObj, $readOnly);
+		Type_Type::enableValidations();
 	}	
 	
 	//Magic Methods
@@ -43,9 +45,9 @@ abstract class Core_TypedObject extends Core_Base {
 		}
 		Exception_TypeException::$field = $name;
 		if ( method_exists($this, $method) ) {
-			return $this->$method(Core_DBI::getInstance()->realEscapeString($value));
+			return $this->$method($this->db->realEscapeString($value));
 		} else {
-			return Type_Type::isTyped($this->$name) ? $this->$name->val = Core_DBI::getInstance()->realEscapeString($value) : $this->$name = Core_DBI::getInstance()->realEscapeString($value);
+			return Type_Type::isTyped($this->$name) ? $this->$name->val = $this->db->realEscapeString($value) : $this->$name = $this->db->realEscapeString($value);
 		}
 	}	
 	

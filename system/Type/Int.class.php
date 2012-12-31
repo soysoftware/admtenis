@@ -14,7 +14,7 @@ class Type_Int extends Type_Type {
 	 * @throws Exception_ConstraintException
 	 */
 	protected function validate($val) {
-		if ( !is_null($val) && !is_int($val) && !ctype_digit($val) ) {
+		if (parent::$validationsEnabled && !is_null($val) && !is_int($val) && !ctype_digit($val) ) {
 			throw new Exception_TypeException($val , 'Int');
 		}
 		return true;

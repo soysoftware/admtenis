@@ -14,7 +14,7 @@ class Type_String extends Type_Type {
 	 * @throws Exception_ConstraintException
 	 */
 	protected function validate($val) {
-		if ( !is_string($val) ) {
+		if ( parent::$validationsEnabled && !is_string($val) ) {
 			throw new Exception_TypeException($val , 'String');
 		}
 		return true;

@@ -14,7 +14,7 @@ class Type_Time extends Type_Type {
 	 * @throws Exception_ConstraintException
 	 */
 	protected function validate($val) {
-		if(!preg_match('/(24:00:00)|(([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])/', $val)){
+		if(parent::$validationsEnabled && !preg_match('/(24:00:00)|(([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])/', $val)){
 			throw new Exception_TypeException($val , 'Time');
 		}
 		return true;

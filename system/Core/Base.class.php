@@ -20,7 +20,8 @@ abstract class Core_Base {
 	 *
 	 */
 	protected $__readOnly = false;
-
+	
+	protected $__db;
 	// Constructor
 	/**
 	 * @ignore
@@ -39,45 +40,8 @@ abstract class Core_Base {
 			$this->createObject(); //Conecto con la base de datos y cargo los datos del objeto
 		}
 	}
+	
 
-	//Magic Methods
-
-	/**
-	 * Magic Method para el GET de una variable que no existe o no puede acceder (Lazy Loading)
-	 * Además contempla que la variable puede ser de un tipo personalizado (Type)
-	 *
-	 * @param string
-	 * @throws Exception
-	 * @return mixed
-	 */
-	public function __get($name) {
-		$method = 'get' . ucfirst($name);
-		$name = '_' . $name;
-		if ( method_exists($this, $method) && !property_exists($this, $name) ) {
-			throw new Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
-		}
-		return method_exists($this, $method) ? $this->$method() : $this->$name;
-	}
-
-	/**
-	 * Magic Method para el SET de una variable que no existe o no puede acceder (Lazy Loading)
-	 * Además contempla que la variable puede ser de un tipo personalizado (Type), y maneja un posible error de tipos
-	 *
-	 * @param string $name
-	 * @param mixed $value
-	 * @throws Exception_TypeException
-	 * @throws Exception_InternalSecurityException
-	 * @throws Exception
-	 * @return mixed
-	 */
-	public function __set($name, $value) {
-		$method = 'set' . ucfirst($name);
-		$name = '_' . $name;
-		if ( !method_exists($this, $method) && !property_exists($this, $name) ) {
-			throw new Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
-		}
-		return method_exists($this, $method) ? $this->$method(Core_DBI::getInstance()->realEscapeString($value)) : $this->$name = Core_DBI::getInstance()->realEscapeString($value);
-	}
 
 	/**
 	 * Magic method que se dispara cuando se intenta serializar el objeto (función serialize)
@@ -114,7 +78,31 @@ abstract class Core_Base {
 	}
 
 	// Getters
-
+	/**
+	 * Magic Method para el GET de una variable que no existe o no puede acceder (Lazy Loading)
+	 * Además contempla que la variable puede ser de un tipo personalizado (Type)
+	 *
+	 * @param string
+	 * @throws Exception
+	 * @return mixed
+	 */
+	public function __get($name) {
+		$method = 'get' . ucfirst($name);
+		$name = '_' . $name;
+		if ( method_exists($this, $method) && !property_exists($this, $name) ) {
+			throw new Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
+		}
+		return method_exists($this, $method) ? $this->$method() : $this->$name;
+	}
+	
+	protected function getDb(){
+		if (!isset($this->__db)){
+			$dbReference = defined('static::DB') ? static::DB : 0;
+			$this->__db = Core_Modules_DB_Loader::load($dbReference);
+		}
+		return $this->__db;
+	}
+	
 	/**
 	 * Retorna el ID del objeto
 	 * Este método se usa como Lazy Loading ya que el ID de cada objeto es PRIVATE
@@ -136,7 +124,25 @@ abstract class Core_Base {
 	}
 
 	// Setters
-
+	/**
+	 * Magic Method para el SET de una variable que no existe o no puede acceder (Lazy Loading)
+	 * Además contempla que la variable puede ser de un tipo personalizado (Type), y maneja un posible error de tipos
+	 *
+	 * @param string $name
+	 * @param mixed $value
+	 * @throws Exception_TypeException
+	 * @throws Exception_InternalSecurityException
+	 * @throws Exception
+	 * @return mixed
+	 */
+	public function __set($name, $value) {
+		$method = 'set' . ucfirst($name);
+		$name = '_' . $name;
+		if ( !method_exists($this, $method) && !property_exists($this, $name) ) {
+			throw new Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
+		}
+		return method_exists($this, $method) ? $this->$method($this->db->realEscapeString($value)) : $this->$name = $this->db->realEscapeString($value);
+	}
 	/**
 	 * Asigna el ID del objeto. Este método se usa para asignarlo en el __construct de Base
 	 *
@@ -158,7 +164,7 @@ abstract class Core_Base {
 		$attributes = array();
 		foreach(get_class_vars($class) as $attr => $value) {
 			if (self::isStorableAttribute($attr) && $attr != $class::_primaryKeyName) {
-				$attributes[trim($attr,'_')] = $value;
+				$attributes[] = trim($attr,'_');
 			}
 		}
 		return $attributes;
@@ -179,14 +185,13 @@ abstract class Core_Base {
 			$this->__original = new $class(null, true);
 		}
 		//Genero la consulta y traigo los resultados
-		$query = Core_DBI::getSingleSelectQuery($this::_table, self::getStorableAttributes(get_class($this)), $this->getArrayPrimaryKey());
-		if (!$result = Core_DBI::getInstance()->query($query)) {
-			throw new Exception_MysqlException(Core_DBI::getInstance()->error() , $query);
+		if (!$result = $this->db->select($this::_table, self::getStorableAttributes(get_class($this)), $this->getArrayPrimaryKey())){
+			throw new Exception_MysqlException($this->db->error() , $this->db->lastQuery);
 		}
-		if (Core_DBI::getInstance()->numRows($result) == 0) {
+		if ($this->db->numRows($result) == 0) {
 			throw new Exception_RecordNotFound($class, $this->id);
 		}
-		$row = Core_DBI::getInstance()->fetchAssoc($result);
+		$row = $this->db->fetchAssoc($result);
 		//Mando a hacer el fill
 		$this->fillObject($row);
 	}
@@ -221,11 +226,11 @@ abstract class Core_Base {
 	 */
 	public final static function getObjectList($class, $where, $limit = null, $readOnly = false){
 		$query = is_array($where) ? Core_DBI::getSingleSelectQuery($class::_table, self::getStorableAttributes($class), $where, $limit) : Core_DBI::getCustomSelectQuery($class::_table, self::getStorableAttributes($class), $where, $limit);
-		if (!$result = Core_DBI::getInstance()->query($query)) {
-			throw new Exception_MysqlException('Error en consulta MySQL para crear lista de objetos de clase ' . $class . ' | MySQL Error: ' . Core_DBI::getInstance()->error() . ' | Query: ' . $query);
+		if (!$result = $this->db->query($query)) {
+			throw new Exception_MysqlException('Error en consulta MySQL para crear lista de objetos de clase ' . $class . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 		}
 		$list = array();
-		while($row = Core_DBI::getInstance()->fetchAssoc($result)) {
+		while($row = $this->db->fetchAssoc($result)) {
 			$obj = new $class(null, $readOnly);
 			$obj->fillObject($row);
 			$list[] = $obj;
@@ -254,8 +259,8 @@ abstract class Core_Base {
 			throw new Exception_InternalSecurityException('Error: no se puede guardar el objeto ya que es readOnly');
 		}
 		//Guardo en transacción
-		Core_DBI::getInstance()->beginTran();
-		$tranStatus = (isset($this->id) ? $this->saveUpdate() : $this->saveInsert());
+		$this->db->beginTran();
+		$tranStatus = ($this->id) ? $this->saveUpdate() : $this->saveInsert();
 		//Recorro los atributos del objeto que estoy guardando, si alguno es un objeto lo mando a guardar
 		foreach($this as $value){
 			if(is_a($value, 'Core_RelationalList')){
@@ -263,7 +268,7 @@ abstract class Core_Base {
 			}
 		}
 		//Termino la transacción
-		$tranStatus ? Core_DBI::getInstance()->commit() : Core_DBI::getInstance()->rollback();
+		$tranStatus ? $this->db->commit() : $this->db->rollback();
 		return $tranStatus;
 	}
 
@@ -276,10 +281,10 @@ abstract class Core_Base {
 	private final function saveInsert(){
 		//Preparo el INSERT
 		$query = Core_DBI::getSingleInsertQuery(static::_table, $this->prepareInsert());
-		if (!$result = Core_DBI::getInstance()->query($query)){
-			throw new Exception_MysqlException('Error en consulta MySQL para guardar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . Core_DBI::getInstance()->error() . ' | Query: ' . $query);
+		if (!$result = $this->db->query($query)){
+			throw new Exception_MysqlException('Error en consulta MySQL para guardar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 		}
-		$this->setId(Core_DBI::getInstance()->insertedId());
+		$this->setId($this->db->insertedId());
 		return $result;
 	}
 
@@ -292,9 +297,8 @@ abstract class Core_Base {
 	private final function saveUpdate(){
 		if ($this != $this->__original) {
 			//Preparo el UPDATE
-			$query = Core_DBI::getSingleUpdateQuery(static::_table, $this->prepareUpdate(), $this->getArrayPrimaryKey());
-			if (!$result = Core_DBI::getInstance()->query($query)){
-				throw new Exception_MysqlException('Error en consulta MySQL para actualizar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . Core_DBI::getInstance()->error() . ' | Query: ' . $query);
+			if (!$result = $this->db->update(static::_table, $this->prepareUpdate(), $this->getArrayPrimaryKey())){
+				throw new Exception_MysqlException($this->db->error() , $this->db->lastQuery);
 			}
 		}
 		return (isset($result) ? $result : true);
@@ -313,13 +317,13 @@ abstract class Core_Base {
 		}
 		if (!is_null($this->id)){
 			//Borro en transacción
-			Core_DBI::getInstance()->beginTran();
+			$this->db->beginTran();
 			$query = Core_DBI::getSingleDeleteQuery($this::_table, $this->getArrayPrimaryKey());
-			if (!$tranStatus = Core_DBI::getInstance()->query($query)) {
-				throw new Exception_MysqlException('Error en consulta MySQL para eliminar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . Core_DBI::getInstance()->error() . ' | Query: ' . $query);
+			if (!$tranStatus = $this->db->query($query)) {
+				throw new Exception_MysqlException('Error en consulta MySQL para eliminar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 			} 
 			//Termino la transacción
-			$tranStatus ? Core_DBI::getInstance()->commit() : Core_DBI::getInstance()->rollback();
+			$tranStatus ? $this->db->commit() : $this->db->rollback();
 		}
 		return isset($tranStatus) ? $tranStatus : true;
 	}

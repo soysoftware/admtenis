@@ -14,7 +14,7 @@ class Type_Float extends Type_Type {
 	 * @throws Exception_ConstraintException
 	 */
 	protected function validate($val) {
-		if (!is_float($val)) {
+		if (parent::$validationsEnabled && !is_float($val)) {
 			throw new Exception_TypeException($val , 'Float');
 		}
 		return true;

@@ -10,8 +10,11 @@
  * @property mixed	$val
  */
 abstract class Type_Type {
+	
 	const PREFIX = 'Type_';
 
+	protected static $validationsEnabled = true;  
+	
 	protected	$constraints;
 	protected	$val;
 
@@ -100,6 +103,13 @@ abstract class Type_Type {
 	
 	public static function isTyped($value){
 		return is_a($value,'Type_Type');
+	}
+	
+	public static function enableValidations(){
+		self::$validationsEnabled = true;
+	}
+	public static function disableValidations(){
+		self::$validationsEnabled = false;
 	}
 }
 

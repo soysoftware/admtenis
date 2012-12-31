@@ -14,7 +14,7 @@ class Type_Bool extends Type_Type {
 	 * @throws Exception_ConstraintException
 	 */
 	protected function validate($val) {
-		if ( !is_bool($val)) {
+		if ( parent::$validationsEnabled && !is_bool($val)) {
 			throw new Exception_TypeException($val , 'Bool');
 		}
 		return true;

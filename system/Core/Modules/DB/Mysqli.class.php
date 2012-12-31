@@ -2,6 +2,7 @@
 class Core_Modules_DB_Mysqli extends Core_Modules_DB_DB {
 	
 	const DEFAULT_PORT = 3306;
+	const ESCAPE_CHAR = '`';
 	
 	private $transactionLevel = 0;
 	
@@ -80,8 +81,26 @@ class Core_Modules_DB_Mysqli extends Core_Modules_DB_DB {
 	public function setCharset($charset){
 		return mysqli_set_charset($this->link, $charset);
 	}
-	
-	
+	public function errorNo(){
+		return mysqli_errno($this->link);
+	}
+	public function errorMsg(){
+		return mysqli_error($this->link);
+	}
+	public function select($table, Array $columns, $where = '', $limit = -1, $order = false){
+		$query  = ' SELECT ' . implode(',', $columns);
+		$query .= ' FROM ' . $this->escape($table);
+		$query .= ' ' . $this->parseWhere($where);
+		$query .= ($limit > 0) ? ' LIMIT ' . $limit : '';
+		return $this->query($query);		
+	}
+	public function update($table, $values, $where){
+		$query  = ' UPDATE ' . $this->escape($table);
+		$query .= ' SET ' . $this->parseValues($values);
+		$query .= ' ' . $this->parseWhere($where);
+		return $this->query($query); 
+		
+	}
 	
 	
 }
