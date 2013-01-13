@@ -14,16 +14,14 @@
 	$config['dbs'][0]['pass'] = 'Graciela';
 	$config['dbs'][0]['database'] = 'admtenis';
 	$config['dbs'][0]['charset'] = 'utf8';
-		
-	define('DB_HOST', 'localhost');
-	define('DB_USER', 'root');
-	define('DB_PASS', '');
-	define('DB_NAME', 'adm_tennis');
-	
-	define('LOG_DIR' , 'C:\xampp\htdocs\admtenis\log\\');
-	define('APP_PATH' , 'C:\xampp\htdocs\admtenis\\');
-	//define('LOG_DIR' , 'D:\htdocs\lanus\log\\');
-	//define('APP_PATH' , 'D:\htdocs\lanus\\');
-	//define('APP_PATH' , 'D:\htdocs\adm_lanus\\');
+	# Cache
+	$config['cache']['descriptor']['enabled'] = true;
+	$config['cache']['descriptor']['engine'] = 'apc';
+	$config['cache']['descriptor']['expiration'] = 0;
+	$config['cache']['descriptor']['servers'][0]['host'] = 'localhost';
+	$config['cache']['model']['enabled'] = false;
+	$config['cache']['model']['engine'] = 'memcached';
+	$config['cache']['model']['expiration'] = 3600;
+	$config['cache']['model']['servers'][0]['host'] = 'localhost';
 	
 ?>

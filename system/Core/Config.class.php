@@ -9,14 +9,15 @@ abstract class Config {
 		self::$config = $config;
 	}
 	
-	public static function getVal($val, $subval = null){
-		if (!isset(self::$config[$val])){
-			return false;
+	public static function getVal($val){
+		$finalVal = self::$config;
+		foreach ( func_get_args() as $arg ) {
+			if(!isset($finalVal[$arg])){
+				return false;
+			}
+			$finalVal = $finalVal[$arg];
 		}
-		if (!is_null($subval) && (!is_array(self::$config[$val]) || !isset(self::$config[$val][$subval]))){
-			return false;
-		}
-		return !is_null($subval) ? self::$config[$val][$subval] : self::$config[$val];
+		return $finalVal;
 	}
 } 
 ?>

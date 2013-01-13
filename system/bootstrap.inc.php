@@ -1,5 +1,8 @@
 <?php
-	use \Flush\Core\Config as Config;
+	
+use Flush\Core\Descriptor;
+use Flush\Core\Config;
+use Flush\Core\Modules\Cache\Drivers;
 
 	# Definimos directorios basicos
 	define('SYSDIR', dirname(__FILE__));
@@ -51,6 +54,10 @@
 				//Core_Modules_DB_Loader::load($dbName);
 			}
 		}
+	}
+	
+	# Cache
+	if (Config::getVal('cache', 'descriptor', 'enabled')){
 	}
 	
 ?>
