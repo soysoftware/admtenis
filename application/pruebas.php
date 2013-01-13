@@ -2,9 +2,9 @@
 require_once '../system/bootstrap.inc.php';
 $turno = new Turno(1);
 $socio = $turno->socioAnfitrion;
-$socio->nombre = 'Juan Pablo';
-$socio->apellido = 'Segundo';
+$socio->nombre = 'Lucas';
+$socio->apellido = 'Ceballos';
 $socio->save();
 $lucasgay = 'lamentablemente es MUY gay probando desde la consola';
-
+$id = $socio->id;
 ?>

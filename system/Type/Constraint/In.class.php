@@ -1,10 +1,11 @@
 <?php
-
+namespace Flush\Type\Constraint;
+use Flush\Exception;
 /**
  * Clase constraint In
  */
 
-abstract class Type_Constraint_In extends Type_Constraint_Constraint {
+abstract class In extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *
@@ -17,7 +18,7 @@ abstract class Type_Constraint_In extends Type_Constraint_Constraint {
 		if (in_array($val, $settings)) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser uno de los siguientes valores: ' . implode(', ', $settings));
+		throw new Exception\ConstraintException('debe ser uno de los siguientes valores: ' . implode(', ', $settings));
 	}
 }
 

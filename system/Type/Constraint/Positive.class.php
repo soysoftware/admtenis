@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint Positive
  */
 
-abstract class Type_Constraint_Positive extends Type_Constraint_Constraint {
+abstract class Positive extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *
@@ -17,7 +20,7 @@ abstract class Type_Constraint_Positive extends Type_Constraint_Constraint {
 		if ($val > 0 || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser un número positivo');
+		throw new Exception\ConstraintException('debe ser un número positivo');
 	}
 }
 

@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint Natural
  */
 
-abstract class Type_Constraint_Natural extends Type_Constraint_Constraint {
+abstract class Natural extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_Natural extends Type_Constraint_Constraint {
 		if ((is_integer($val) && $val >= 0) || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser un número natural (entero y mayor o igual a cero)');
+		throw new Exception\ConstraintException('debe ser un número natural (entero y mayor o igual a cero)');
 	}
 }
 

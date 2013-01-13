@@ -1,10 +1,10 @@
 <?php
-
+namespace Flush\Type;
 /**
  * Clase para el tipo de dato Objeto. Hereda de Type
  */
 
-class Type_Object extends Type_Type {
+class Object extends BaseType {
 	
 	private $class;
 	private $referenceValue = null;

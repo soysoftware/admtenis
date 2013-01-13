@@ -1,5 +1,7 @@
 <?php
-abstract class Core_Config {
+namespace Flush\Core;
+
+abstract class Config {
 	
 	private static $config = array();
 	

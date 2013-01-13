@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint SmallerThan
  */
 
-abstract class Type_Constraint_SmallerThan extends Type_Constraint_Constraint {
+abstract class SmallerThan extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_SmallerThan extends Type_Constraint_Constraint {
 		if ($val < $settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser menor que ' . $settings);
+		throw new Exception\ConstraintException('debe ser menor que ' . $settings);
 	}
 }
 

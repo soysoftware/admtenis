@@ -1,4 +1,6 @@
 <?php
+	use \Flush\Core\Config as Config;
+
 	# Definimos directorios basicos
 	define('SYSDIR', dirname(__FILE__));
 	define('ROOTDIR', ($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . current(explode(DIRECTORY_SEPARATOR, ltrim(str_ireplace($_SERVER['DOCUMENT_ROOT'], '', __FILE__),DIRECTORY_SEPARATOR), -1))));
@@ -27,7 +29,7 @@
 	
 	# Auto Loaders
 	spl_autoload_register(function($class){
-		$file = SYSDIR . DIRECTORY_SEPARATOR . str_replace('_', '/', $class) . '.class.php';
+		$file = SYSDIR . DIRECTORY_SEPARATOR . str_replace('\\', '/', str_replace('Flush\\' , '', $class)) . '.class.php';
 		if (file_exists($file)){
 			@include_once $file;
 		}
@@ -40,13 +42,13 @@
 	});
 	
 	# Clase Config
-	Core_Config::init($config);
+	Config::init($config);
 	
 	# Bases de datos
-	if (Core_Config::getVal('dbAutoConnect')){
-		foreach( Core_Config::getVal('dbs') as $dbName => $dbConfig ){
+	if (Config::getVal('dbAutoConnect')){
+		foreach( Config::getVal('dbs') as $dbName => $dbConfig ){
 			if (isset($dbConfig['autoConnect']) && $dbConfig['autoConnect']){
-				Core_Modules_DB_Loader::load($dbName);
+				//Core_Modules_DB_Loader::load($dbName);
 			}
 		}
 	}

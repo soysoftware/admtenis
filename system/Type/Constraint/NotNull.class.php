@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint NotNull
  */
 
-abstract class Type_Constraint_NotNull extends Type_Constraint_Constraint {
+abstract class NotNull extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *
@@ -17,7 +20,7 @@ abstract class Type_Constraint_NotNull extends Type_Constraint_Constraint {
 		if (!is_null($val) || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('no debe ser nulo');
+		throw new Exception\ConstraintException('no debe ser nulo');
 	}
 }
 

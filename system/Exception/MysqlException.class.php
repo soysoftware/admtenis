@@ -1,9 +1,10 @@
 <?php
+namespace Flush\Exception;
 /**
  * Clase de Exception para cuando un registro no existe
  */
 
-class Exception_MysqlException extends Exception {
+class MysqlException extends \Exception {
 	public function __construct($mysqlError, $query = ''){
 		$msg = 'Error MySQL | ERRO: ' . $mysqlError;
 		if ( !empty($query) ) {

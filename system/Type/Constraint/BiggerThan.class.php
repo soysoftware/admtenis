@@ -1,10 +1,11 @@
 <?php
-
+namespace Flush\Type\Constraint;
+use Flush\Exception as Exception;
 /**
  * Clase constraint BiggerThan
  */
 
-abstract class Type_Constraint_BiggerThan extends Type_Constraint_Constraint {
+abstract class BiggerThan extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 *
@@ -17,7 +18,7 @@ abstract class Type_Constraint_BiggerThan extends Type_Constraint_Constraint {
 		if ($val > $settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser mayor que ' . $settings);
+		throw new Exception\ConstraintException('debe ser mayor que ' . $settings);
 	}
 }
 

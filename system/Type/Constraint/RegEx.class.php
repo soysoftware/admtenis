@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint RegEx
  */
 
-abstract class Type_Constraint_RegEx extends Type_Constraint_Constraint {
+abstract class RegEx extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_RegEx extends Type_Constraint_Constraint {
 		if (preg_match($settings, $val)) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe cumplir con la expresión regular: ' . $settings);
+		throw new Exception\ConstraintException('debe cumplir con la expresión regular: ' . $settings);
 	}
 }
 

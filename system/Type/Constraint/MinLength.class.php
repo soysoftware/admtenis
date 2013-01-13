@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint MinLength
  */
 
-abstract class Type_Constraint_MinLength extends Type_Constraint_Constraint {
+abstract class MinLength extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_MinLength extends Type_Constraint_Constraint {
 		if (strlen($val) >= $settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('no debe tener menos de ' . $settings . ' caracteres');
+		throw new Exception\ConstraintException('no debe tener menos de ' . $settings . ' caracteres');
 	}
 }
 

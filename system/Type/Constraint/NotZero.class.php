@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint NotZero
  */
 
-abstract class Type_Constraint_NotZero extends Type_Constraint_Constraint {
+abstract class NotZero extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_NotZero extends Type_Constraint_Constraint {
 		if ($val !== 0 || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('no debe ser cero');
+		throw new Exception\ConstraintException('no debe ser cero');
 	}
 }
 

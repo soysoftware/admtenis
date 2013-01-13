@@ -1,8 +1,9 @@
 <?php
+namespace Flush\Exception;
 /**
  * Clase de Exception para violaciones de seguridad
  */
 
-class Exception_InternalSecurityException extends Exception {}
+class InternalSecurityException extends \Exception {}
 
 ?>

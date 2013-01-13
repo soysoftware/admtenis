@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint NotNull
  */
 
-abstract class Type_Constraint_NotEmpty extends Type_Constraint_Constraint {
+abstract class NotEmpty extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_NotEmpty extends Type_Constraint_Constraint {
 		if (strlen($val) > 0 || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('no debe estar en blanco');
+		throw new Exception\ConstraintException('no debe estar en blanco');
 	}
 }
 

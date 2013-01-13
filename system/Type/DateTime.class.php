@@ -1,10 +1,10 @@
 <?php
-
+namespace Flush\Type;
 /**
  * Clase para el tipo de dato DateTime. Hereda de Type
  */
 
-class Type_DateTime extends Type_Type {
+class DateTime extends BaseType {
 	/**
 	 * Método que valida esta constraint
 	 * 

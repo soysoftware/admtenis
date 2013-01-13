@@ -1,10 +1,13 @@
 <?php
 
+namespace Flush\Type\Constraint;
+use Flush\Exception;
+
 /**
  * Clase constraint NotIn
  */
 
-abstract class Type_Constraint_NotIn extends Type_Constraint_Constraint {
+abstract class NotIn extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +20,7 @@ abstract class Type_Constraint_NotIn extends Type_Constraint_Constraint {
 		if (!in_array($val, $settings)) {
 			return true;
 		}
-		throw new Exception_ConstraintException('no debe ser uno de los siguientes valores: ' . implode(', ', $settings));
+		throw new Exception\ConstraintException('no debe ser uno de los siguientes valores: ' . implode(', ', $settings));
 	}
 }
 

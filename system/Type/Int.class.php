@@ -1,10 +1,10 @@
 <?php
-
+namespace Flush\Type;
 /**
  * Clase para el tipo de dato Int. Hereda de Type
  */
 
-class Type_Int extends Type_Type {
+class Int extends BaseType {
 	/**
 	 * Método que valida esta constraint
 	 *

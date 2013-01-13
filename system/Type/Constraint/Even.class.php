@@ -1,10 +1,11 @@
 <?php
-
+namespace Flush\Type\Constraint;
+use Flush\Exception as Exception;
 /**
  * Clase constraint Even
  */
 
-abstract class Type_Constraint_Even extends Type_Constraint_Constraint {
+abstract class Even extends Constraint {
 	/**
 	 * Método que valida esta constraint
 	 * 
@@ -17,7 +18,7 @@ abstract class Type_Constraint_Even extends Type_Constraint_Constraint {
 		if ((is_integer($val) && ($val % 2 == 0)) || !$settings) {
 			return true;
 		}
-		throw new Exception_ConstraintException('debe ser un número par');
+		throw new Exception\ConstraintException('debe ser un número par');
 	}
 }
 

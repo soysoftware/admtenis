@@ -1,5 +1,7 @@
 <?php
-abstract class Core_Descriptor {
+namespace Flush\Core;
+
+abstract class Descriptor {
 	
 	const CACHE_ENABLED = false;
 	
@@ -13,17 +15,17 @@ abstract class Core_Descriptor {
 	}
 	
 	private static function create($class){
-		$reflectionClass = new ReflectionClass($class);
+		$reflectionClass = new \ReflectionClass($class);
 		return self::CACHE_ENABLED ? self::createFromCache($reflectionClass) : self::createFromReflection($reflectionClass);
 	}
 	
-	private static function createFromCache(ReflectionClass &$reflectionClass){
+	private static function createFromCache(\ReflectionClass &$reflectionClass){
 		if ( preg_match('/on/i', ini_get('apc.enabled'))){
 			
 		}
 	}
 	
-	private static function createFromReflection(ReflectionClass &$reflectionClass){
+	private static function createFromReflection(\ReflectionClass &$reflectionClass){
 		$descriptor = array();
 		foreach($reflectionClass->getProperties() as $reflectionProperty){
 			foreach ( self::docCommentToArray($reflectionProperty->getDocComment()) as $commentLine ) {
