@@ -98,6 +98,9 @@ class Mysqli extends BaseDriver {
 		return $this->query($query);		
 	}
 	public function update($table, Array $values, $where){
+		if (count($values) == 0){
+			return true;
+		}
 		$query  = ' UPDATE ' . $this->escape($table);
 		$query .= ' SET ' . $this->parseValuesForUpdate($values);
 		$query .= ' ' . $this->parseWhere($where);

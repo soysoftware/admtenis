@@ -1,6 +1,6 @@
 <?php
-use Flush\Core\TypedModel;
-use Flush\Core\BaseModel;
+use Flush\Core\Model\TypedModel;
+use Flush\Core\Model\BaseModel;
 use Flush\Type\BaseType;
 
 /**

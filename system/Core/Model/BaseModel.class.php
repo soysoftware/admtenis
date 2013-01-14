@@ -1,7 +1,11 @@
 <?php
-namespace Flush\Core;
-use Flush\Core\Modules\DB as DB;
-use Flush\Exception as Exception;
+namespace Flush\Core\Model;
+use Flush\Core\Modules\DB\Loader;
+
+use Flush\Type\BaseType;
+
+use Flush\Core\Modules\DB;
+use Flush\Exception;
 /**
  * @author Lucas Ceballos
  * @since 11/02/2012
@@ -22,7 +26,7 @@ abstract class BaseModel {
 	protected $__readOnly = false;
 	/**
 	 * 
-	 * @var $_db;
+	 * @var \Flush\Core\Modules\DB\Drivers\BaseDriver $_db;
 	 */
 	protected $__db;
 	// Constructor
@@ -51,13 +55,13 @@ abstract class BaseModel {
 	 * Devuelve un array asociativo que contiene los nombres de los atributos del objeto y los valores asociados
 	 * Además carga las relational lists para poder perdir luego sus objetos desde JS (al igual que los objetos comunes)
 	 *
-	 * @todo Metodo Beta
+	 * @todo ESTE METODO ES UNA MIERDA
 	 * @return array
 	 */
 	public function __sleep(){
 		$array = array();
 		foreach ($this as $attr => $val) {
-			if (Core_Base::isStorableAttribute($attr)) {
+			if (self::isStorableAttribute($attr)) {
 				$array[$attr] = $val;
 			} else {
 				if (Core_Functions::esAtributoLL($attr)) { //TODO cambiar esto! que esté en Base
@@ -90,18 +94,18 @@ abstract class BaseModel {
 	 * @return mixed
 	 */
 	public function __get($name) {
-		$method = 'get' . ucfirst($name);
-		$name = '_' . $name;
-		if ( method_exists($this, $method) && !property_exists($this, $name) ) {
+		if (method_exists($this, $method = 'get' . ucfirst($name))){
+			return $this->$method();
+		} else if (property_exists(get_class($this), $name = '_' . $name)){
+			return BaseType::isTyped($this->$name) ? $this->$name->val : $this->$name; 
+		} else {
 			throw new \Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
 		}
-		return method_exists($this, $method) ? $this->$method() : $this->$name;
 	}
 	
 	protected function getDb(){
 		if (!isset($this->__db)){
-			$dbReference = defined('static::DB') ? static::DB : 0;
-			$this->__db = DB\Loader::load($dbReference);
+			$this->__db = Loader::load(defined('static::DB') ? static::DB : 0);
 		}
 		return $this->__db;
 	}
@@ -113,7 +117,7 @@ abstract class BaseModel {
 	 * @return int
 	 */
 	protected function getId(){
-		return $this->{static::_primaryKeyName};
+		return BaseType::isTyped($this->{static::_primaryKeyName}) ? $this->{static::_primaryKeyName}->val : $this->{static::_primaryKeyName};
 	}
 
 	/**
@@ -138,12 +142,13 @@ abstract class BaseModel {
 	 * @return mixed
 	 */
 	public function __set($name, $value) {
-		$method = 'set' . ucfirst($name);
-		$name = '_' . $name;
-		if ( !method_exists($this, $method) && !property_exists($this, $name) ) {
-			throw new Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
+		if (method_exists($this, $method = 'set' . ucfirst($method))){
+			return $this->$method($this->db->realEscapeString($value));
+		} else if (property_exists(get_class($this), $name = '_' . $name)){
+			BaseType::isTyped($this->$name) ? $this->$name->val = $this->realEscapeString($value) : $this->$name = $this->realEscapeString($value); 
+		} else {
+			throw new \Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
 		}
-		return method_exists($this, $method) ? $this->$method($this->db->realEscapeString($value)) : $this->$name = $this->db->realEscapeString($value);
 	}
 	/**
 	 * Asigna el ID del objeto. Este método se usa para asignarlo en el __construct de Base
@@ -151,7 +156,7 @@ abstract class BaseModel {
 	 * @param mixed $value
 	 */
 	protected function setId($value){
-		$this->{static::_primaryKeyName} = $value;
+		BaseType::isTyped($this->{static::_primaryKeyName}) ? $this->{static::_primaryKeyName}->val = $value : $this->{static::_primaryKeyName} = $value;
 	}
 
 	// Metodos
@@ -207,9 +212,6 @@ abstract class BaseModel {
 		//Hago el fill
 		foreach($row as $attr => $value){
 			$this->$attr = $value;
-			if(!$this->__readOnly){
-				$this->__original['_' . $attr] = $value;
-			}
 		}
 	}
 
@@ -227,7 +229,7 @@ abstract class BaseModel {
 	public final static function getObjectList($class, $where, $limit = null, $readOnly = false){
 		$query = is_array($where) ? Core_DBI::getSingleSelectQuery($class::_table, self::getStorableAttributes($class), $where, $limit) : Core_DBI::getCustomSelectQuery($class::_table, self::getStorableAttributes($class), $where, $limit);
 		if (!$result = $this->db->query($query)) {
-			throw new Exception_MysqlException('Error en consulta MySQL para crear lista de objetos de clase ' . $class . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
+			throw new Exception\MysqlException('Error en consulta MySQL para crear lista de objetos de clase ' . $class . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 		}
 		$list = array();
 		while($row = $this->db->fetchAssoc($result)) {
@@ -280,8 +282,7 @@ abstract class BaseModel {
 	 */
 	private final function saveInsert(){
 		//Preparo el INSERT
-		$query = Core_DBI::getSingleInsertQuery(static::_table, $this->prepareInsert());
-		if (!$result = $this->db->query($query)){
+		if (!$result = $this->db->insert(static::_table, $this->getStorableAttributes(get_class($this)))){
 			throw new Exception\MysqlException('Error en consulta MySQL para guardar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 		}
 		$this->setId($this->db->insertedId());
@@ -295,12 +296,8 @@ abstract class BaseModel {
 	 * @return boolean
 	 */
 	private final function saveUpdate(){
-		$modifiedValues = $this->prepareUpdate();
-		if ( is_array($modifiedValues) && !empty($modifiedValues)){
-			//Preparo el UPDATE
-			if (!$result = $this->db->update(static::_table, $this->prepareUpdate(), $this->getArrayPrimaryKey())){
-				throw new Exception_MysqlException($this->db->error() , $this->db->lastQuery);
-			}
+		if (!$result = $this->db->update(static::_table, $this->prepareUpdate(), $this->getArrayPrimaryKey())){
+			throw new Exception\MysqlException($this->db->error() , $this->db->lastQuery);
 		}
 		return (isset($result) ? $result : true);
 	}
@@ -314,14 +311,13 @@ abstract class BaseModel {
 	 */
 	public final function delete(){
 		if ($this->__readOnly) {
-			throw new Exception('Error: no se puede guardar el objeto ya que es readOnly');
+			throw new \Exception('Error: no se puede borrar el objeto ya que es readOnly');
 		}
 		if (!is_null($this->id)){
 			//Borro en transacción
 			$this->db->beginTran();
-			$query = Core_DBI::getSingleDeleteQuery($this::_table, $this->getArrayPrimaryKey());
-			if (!$tranStatus = $this->db->query($query)) {
-				throw new Exception_MysqlException('Error en consulta MySQL para eliminar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
+			if (!$tranStatus = $this->db->delete(static::_table, $this->getArrayPrimaryKey())) {
+				throw new Exception\MysqlException('Error en consulta MySQL para eliminar objeto de clase ' . get_class($this) . ' | MySQL Error: ' . $this->db->error() . ' | Query: ' . $query);
 			} 
 			//Termino la transacción
 			$tranStatus ? $this->db->commit() : $this->db->rollback();
@@ -343,7 +339,7 @@ abstract class BaseModel {
 			if (is_a($value, 'Type_Type')) {
 				$value = $value->val;
 			}
-			if (!is_object($value) && !is_array($value) && (Core_Base::isStorableAttribute($attr)) && ($attr != $this::_primaryKeyName)) {
+			if (!is_object($value) && !is_array($value) && (self::isStorableAttribute($attr)) && ($attr != $this::_primaryKeyName)) {
 				$values[trim($attr,'_')] = $value;
 			}
 		}
@@ -361,7 +357,7 @@ abstract class BaseModel {
 		//Recorro los atributos del objeto y guardo los modificados en un array asociativo
 		$values = array();
 		foreach($this as $attr => $value){
-			if (is_a($value, 'Type_Type')){
+			if (BaseType::isTyped($value)){
 				$value = $value->val;
 			}
 			if (!is_object($value) && !is_array($value) && (self::isStorableAttribute($attr))){

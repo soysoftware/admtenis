@@ -1,5 +1,5 @@
 <?php
-namespace Flush\Core;
+namespace Flush\Core\Model;
 
 abstract class Descriptor {
 	
