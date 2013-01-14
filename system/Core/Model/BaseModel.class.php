@@ -1,17 +1,15 @@
 <?php
-namespace Flush\Core\Model;
-use Flush\Core\Modules\DB\Loader;
-
-use Flush\Type\BaseType;
-
-use Flush\Core\Modules\DB;
-use Flush\Exception;
 /**
  * @author Lucas Ceballos
  * @since 11/02/2012
  * @version 1.5.1
  */
 
+namespace Flush\Core\Model;
+use Flush\Core\Modules\DB\Loader;
+use Flush\Type\BaseType;
+use Flush\Core\Modules\DB;
+use Flush\Exception;
 
 abstract class BaseModel {
 	/**
@@ -47,8 +45,6 @@ abstract class BaseModel {
 			$this->createObject(); //Conecto con la base de datos y cargo los datos del objeto
 		}
 	}
-	
-
 
 	/**
 	 * Magic method que se dispara cuando se intenta serializar el objeto (función serialize)
@@ -96,7 +92,7 @@ abstract class BaseModel {
 	public function __get($name) {
 		if (method_exists($this, $method = 'get' . ucfirst($name))){
 			return $this->$method();
-		} else if (property_exists(get_class($this), $name = '_' . $name)){
+		} else if (property_exists(get_class($this), $name = '_' . $name) || property_exists(get_class($this), $name = '_' . $name)){
 			return BaseType::isTyped($this->$name) ? $this->$name->val : $this->$name; 
 		} else {
 			throw new \Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
@@ -142,12 +138,15 @@ abstract class BaseModel {
 	 * @return mixed
 	 */
 	public function __set($name, $value) {
-		if (method_exists($this, $method = 'set' . ucfirst($method))){
-			return $this->$method($this->db->realEscapeString($value));
-		} else if (property_exists(get_class($this), $name = '_' . $name)){
-			BaseType::isTyped($this->$name) ? $this->$name->val = $this->realEscapeString($value) : $this->$name = $this->realEscapeString($value); 
-		} else {
-			throw new \Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
+		if ( ($originalValue = $this->$name) != $value){
+			if (method_exists($this, $method = 'set' . ucfirst($name))){
+				return $this->$method($this->db->realEscapeString($value));
+			} else if (property_exists(get_class($this), $name = '_' . $name)){
+				$this->__original[$name] = $originalValue;
+				BaseType::isTyped($this->$name) ? $this->$name->val = $this->db->realEscapeString($value) : $this->$name = $this->db->realEscapeString($value);
+			} else {
+				throw new \Exception('No existe el método ' . $method . ' ni la propiedad ' . $name . ' en la clase "' . get_class($this) . '"');
+			}
 		}
 	}
 	/**
@@ -211,7 +210,12 @@ abstract class BaseModel {
 	protected final function fillObject(Array $row){
 		//Hago el fill
 		foreach($row as $attr => $value){
-			$this->$attr = $value;
+			$attr = '_' . $attr;
+			if (BaseType::isTyped($this->$attr)){
+				$this->$attr->val = $value;
+			} else {
+				$this->$attr = $value;
+			}
 		}
 	}
 
@@ -356,15 +360,8 @@ abstract class BaseModel {
 	protected function prepareUpdate(){
 		//Recorro los atributos del objeto y guardo los modificados en un array asociativo
 		$values = array();
-		foreach($this as $attr => $value){
-			if (BaseType::isTyped($value)){
-				$value = $value->val;
-			}
-			if (!is_object($value) && !is_array($value) && (self::isStorableAttribute($attr))){
-				if ($value != $this->__original[$attr]) {
-					$values[trim($attr,'_')] = $value;
-				}
-			}
+		foreach($this->__original as $attr => $value){
+			$values[trim($attr, '_')] = BaseType::isTyped($this->$attr) ? $this->$attr->val : $this->$attr;
 		}
 		return $values;
 	}

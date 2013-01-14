@@ -20,7 +20,7 @@ abstract class NotEmpty extends Constraint {
 		if (strlen($val) > 0 || !$settings) {
 			return true;
 		}
-		throw new Exception\ConstraintException('no debe estar en blanco');
+		throw new Exception\ConstraintException('can not be empty');
 	}
 }
 

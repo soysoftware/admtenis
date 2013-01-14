@@ -5,10 +5,9 @@ namespace Flush\Exception;
  */
 
 class TypeException extends \Exception {
-	public static $field;
 	
     public function __construct($given, $expected){
-    	$this->message = '[Data Type Error] Field ' . self::$field . ' must be ' . $expected . ' , ' . $given . '(' . gettype($given) . ') given' ;
+    	$this->message = '[Data Type Error] Field ' . debug_backtrace()[6]['args'][0] . ' must be ' . $expected . ' , ' . $given . '(' . gettype($given) . ') given' ;
 	}
 
 }
