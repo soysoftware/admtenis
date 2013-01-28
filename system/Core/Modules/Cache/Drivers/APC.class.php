@@ -33,8 +33,7 @@ class APC extends BaseDriver {
 	
 	public function clean(){
 		return apc_clear_cache();
-	}
-	
+	}	
 	
 }
 ?>
