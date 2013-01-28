@@ -1,0 +1,13 @@
+AddHandler application/x-httpd-php .php .php.html #XAMPP
+#AddHandler x-httpd-php5-3 .php .php.html #Dattatec
+
+DirectoryIndex index.php index.html home.html index.php.html
+
+#RewriteEngine On
+#RewriteRule ^(.*)$ application/login.php
+
+RewriteEngine on
+RewriteCond $1 !^(favicon.ico|robots\.txt)
+RewriteRule ^application/controllers/(.*)$ system/baseController.php?request=$1&%{QUERY_STRING} [L]
+
+RewriteRule ^application/views/(.*)\.php\.html$ application/views/viewBase.php?viewUrl=$1 [NC,L]
