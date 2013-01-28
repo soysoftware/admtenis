@@ -8,7 +8,7 @@
 class FlushResponse {
 	protected static $_response = null;
 
-	protected static function getInstance(){
+	public static function getInstance(){
 		if(!isset(self::$_response)){
 			self::$_response = new FlushResponse();
 		}
