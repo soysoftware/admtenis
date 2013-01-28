@@ -1,4 +1,7 @@
 <?php
+use Flush\Core\Model\TypedModel;
+use Flush\Core\Model\BaseModel;
+use Flush\Type\BaseType;
 /**
  * @author Lucas Ceballos
  * @since 11/02/2012
@@ -17,7 +20,7 @@
  * @property Int	$estado
  */
 
-class Socio extends Core_TypedObject {
+class Socio extends TypedModel {
 	
 	const _table = 'socio';
 	const _primaryKeyName = '_idSocio';
