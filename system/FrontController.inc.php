@@ -61,7 +61,7 @@ use Flush\Core\Modules\Cache\Drivers;
 	}
 	
 	# Ejecucion de controller
-	$request = ($_SERVER['REQUEST_METHOD'] == 'GET' ? new GetRequest() : new PostRequest());
+	$request = new Request();
 	$aux = explode('/', $request->request('request'));
 	$controllerName = ((!empty($aux[0])) ? ucfirst($aux[0]) : 'NotFound') . 'Controller';
 	$actionName = (!empty($aux[1])) ? strtolower($aux[1]) : 'index';

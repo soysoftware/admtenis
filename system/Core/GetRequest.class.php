@@ -6,13 +6,11 @@
  */
 
 class GetRequest {
-	public function request($var) {
-		return $_GET[$var];
+    
+	public function __get($name) {
+		return $_GET[$name];
 	}
-
-	public function getObject() {
-		return (object)$_GET;
-	}
+		
 }
 
 ?>

@@ -6,13 +6,11 @@
  */
 
 class PostRequest {
-	public function request($var) {
-		return $_POST[$var];
+    
+	public function __get($name) {
+		return $_POST[$name];
 	}
-
-	public function getObject() {
-		return (object)$_POST;
-	}
+	
 }
 
 ?>

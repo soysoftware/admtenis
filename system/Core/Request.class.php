@@ -6,17 +6,17 @@
  */
 
 class Request {
-	public final function server($var) {
-		return $_SERVER[$var];
-	}
-
-	public function request($var) {
-		return $_REQUEST[$var];
-	}
-
-	public function getObject() {
-		return (object)$_POST;
-	}
+	
+	private $realRequest;
+	
+    public function __construct() {
+    	$class = ucfirst(strtolower($_SERVER['REQUEST_METHOD'])) . 'Request';
+    	$this->realRequest = new $class();
+    }
+    
+    public function __get($name) {
+    	return $this->realRequest->$name;
+    }
 }
 
 ?>
