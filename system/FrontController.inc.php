@@ -1,6 +1,6 @@
 <?php
 	
-use Flush\Core\Descriptor;
+use Flush\Core\Model\Descriptor;
 use Flush\Core\Config;
 use Flush\Core\Modules\Cache\Drivers;
 
