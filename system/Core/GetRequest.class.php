@@ -5,17 +5,13 @@
  * @version 0.0.1
  */
 
-class Request {
-	public final function server($var) {
-		return $_SERVER[$var];
-	}
-
+class GetRequest {
 	public function request($var) {
-		return $_REQUEST[$var];
+		return $_GET[$var];
 	}
 
 	public function getObject() {
-		return (object)$_POST;
+		return (object)$_GET;
 	}
 }
 

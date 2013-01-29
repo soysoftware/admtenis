@@ -5,16 +5,7 @@
  * @version 0.0.1
  */
 
-class FlushResponse {
-	protected static $_response = null;
-
-	public static function getInstance(){
-		if(!isset(self::$_response)){
-			self::$_response = new FlushResponse();
-		}
-		return self::$_response;
-	}
-
+class Response {
 	/**
 	 * Holds HTTP response statuses
 	 *
@@ -325,21 +316,14 @@ class FlushResponse {
 	}
 
 	/**
-	 * Send wrapper
-	 */
-	public static function send() {
-		self::getInstance()->_send();
-	}
-
-	/**
 	 * Sends the complete response to the client including headers and message body.
 	 * Will echo out the content in the response body.
 	 *
 	 * @return void
 	 */
-	protected function _send() {
+	public function _send() {
 		if (isset($this->_headers['Location']) && $this->_status === 200) {
-			$this->statusCode(302);
+			$this->_statusCode(302);
 		}
 
 		$codeMessage = $this->_statusCodes[$this->_status];
@@ -381,11 +365,11 @@ class FlushResponse {
 			return;
 		}
 		if (strpos($this->_contentType, 'text/') === 0) {
-			$this->header('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
+			$this->_header('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
 		} elseif ($this->_contentType === 'application/json') {
-			$this->header('Content-Type', "{$this->_contentType}; charset=UTF-8");
+			$this->_header('Content-Type', "{$this->_contentType}; charset=UTF-8");
 		} else {
-			$this->header('Content-Type', "{$this->_contentType}");
+			$this->_header('Content-Type', "{$this->_contentType}");
 		}
 	}
 
@@ -396,7 +380,7 @@ class FlushResponse {
 	 */
 	protected function _setContent() {
 		if (in_array($this->_status, array(304, 204))) {
-			$this->body('');
+			$this->_body('');
 		}
 	}
 
@@ -415,9 +399,9 @@ class FlushResponse {
 		if ($shouldSetLength) {
 			$offset = ob_get_level() ? ob_get_length() : 0;
 			if (ini_get('mbstring.func_overload') & 2 && function_exists('mb_strlen')) {
-				$this->length($offset + mb_strlen($this->_body, '8bit'));
+				$this->_length($offset + mb_strlen($this->_body, '8bit'));
 			} else {
-				$this->length($this->_headers['Content-Length'] = $offset + strlen($this->_body));
+				$this->_length($this->_headers['Content-Length'] = $offset + strlen($this->_body));
 			}
 		}
 	}
@@ -449,12 +433,6 @@ class FlushResponse {
 		echo $content;
 	}
 
-	/**
-	 * Header wrapper
-	 */
-	public static function header($header = null, $value = null) {
-		return self::getInstance()->_header($header, $value);
-	}
 
 	/**
 	 * Buffers a header string to be sent
@@ -483,14 +461,14 @@ class FlushResponse {
 	 * @param string $value. The header value.
 	 * @return array list of headers to be sent
 	 */
-	protected function _header($header, $value) {
+	public function _header($header = null, $value = null) {
 		if (is_null($header)) {
 			return $this->_headers;
 		}
 		if (is_array($header)) {
 			foreach ($header as $h => $v) {
 				if (is_numeric($h)) {
-					$this->header($v);
+					$this->_header($v);
 					continue;
 				}
 				$this->_headers[$h] = trim($v);
@@ -509,31 +487,17 @@ class FlushResponse {
 	}
 
 	/**
-	 * Body wrapper
-	 */
-	public static function body($content = null) {
-		return self::getInstance()->_body($content);
-	}
-
-	/**
 	 * Buffers the response message to be sent
 	 * if $content is null the current buffer is returned
 	 *
 	 * @param string $content the string message to be sent
 	 * @return string current message buffer if $content param is passed as null
 	 */
-	protected function _body($content) {
+	public function _body($content = null) {
 		if (is_null($content)) {
 			return $this->_body;
 		}
 		return $this->_body = $content;
-	}
-
-	/**
-	 * statusCode wrapper
-	 */
-	public static function statusCode($code = null) {
-		return self::getInstance()->_statusCode($code);
 	}
 
 	/**
@@ -544,7 +508,7 @@ class FlushResponse {
 	 * @return integer current status code
 	 * @throws Exception When an unknown status code is reached.
 	 */
-	protected function _statusCode($code) {
+	public function _statusCode($code = null) {
 		if (is_null($code)) {
 			return $this->_status;
 		}
@@ -552,13 +516,6 @@ class FlushResponse {
 			throw new Exception('Unknown status code');
 		}
 		return $this->_status = $code;
-	}
-
-	/**
-	 * Type wrapper
-	 */
-	public static function type($contentType = null) {
-		return self::getInstance()->_type($contentType);
 	}
 
 	/**
@@ -586,7 +543,7 @@ class FlushResponse {
 	 * @param string $contentType
 	 * @return mixed current content type or false if supplied an invalid content type
 	 */
-	protected function _type($contentType) {
+	public function _type($contentType = null) {
 		if (is_null($contentType)) {
 			return $this->_contentType;
 		}
@@ -607,31 +564,17 @@ class FlushResponse {
 	}
 
 	/**
-	 * charset wrapper
-	 */
-	public static function charset($charset = null) {
-		return self::getInstance()->_type($charset);
-	}
-
-	/**
 	 * Sets the response charset
 	 * if $charset is null the current charset is returned
 	 *
 	 * @param string $charset
 	 * @return string current charset
 	 */
-	protected function _charset($charset) {
+	public function _charset($charset = null) {
 		if (is_null($charset)) {
 			return $this->_charset;
 		}
 		return $this->_charset = $charset;
-	}
-
-	/**
-	 * expires wrapper
-	 */
-	public static function expires($time = null) {
-		return self::getInstance()->_type($time);
 	}
 
 	/**
@@ -647,7 +590,7 @@ class FlushResponse {
 	 * @param string|DateTime $time
 	 * @return string
 	 */
-	protected function _expires($time) {
+	public function _expires($time = null) {
 		if ($time !== null) {
 			$date = $this->_getUTCDate($time);
 			$this->_headers['Expires'] = $date->format('D, j M Y H:i:s') . ' GMT';
@@ -678,36 +621,23 @@ class FlushResponse {
 	}
 
 	/**
-	 * expires wrapper
-	 */
-	public static function download($filename) {
-		self::getInstance()->_download($filename);
-	}
-
-	/**
 	 * Sets the correct headers to instruct the browser to download the response as a file.
 	 *
 	 * @param string $filename the name of the file as the browser will download the response
 	 * @return void
 	 */
-	protected function _download($filename) {
+	public function _download($filename) {
 		$this->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-	}
-
-	/**
-	 * expires wrapper
-	 */
-	public static function protocol($protocol = null) {
-		return self::getInstance()->_protocol($protocol);
 	}
 
 	/**
 	 * Sets the protocol to be used when sending the response. Defaults to HTTP/1.1
 	 * If called with no arguments, it will return the current configured protocol
 	 *
+	 * @param null $protocol
 	 * @return string protocol to be used for sending response
 	 */
-	protected function _protocol($protocol) {
+	public function _protocol($protocol = null) {
 		if ($protocol !== null) {
 			$this->_protocol = $protocol;
 		}
@@ -715,19 +645,13 @@ class FlushResponse {
 	}
 
 	/**
-	 * expires wrapper
-	 */
-	public static function length($bytes = null) {
-		return self::getInstance()->_length($bytes);
-	}
-
-	/**
 	 * Sets the Content-Length header for the response
 	 * If called with no arguments returns the last Content-Length set
 	 *
+	 * @param null $bytes
 	 * @return int
 	 */
-	protected function _length($bytes) {
+	public function _length($bytes = null) {
 		if ($bytes !== null ) {
 			$this->_headers['Content-Length'] = $bytes;
 		}

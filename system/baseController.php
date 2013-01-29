@@ -11,7 +11,15 @@ require_once '../application/controllers/clubes/clubes.php';
 require_once '../application/controllers/login/login.php';
 
 
-FlushRequest::controller()->run();
+$request = ($_SERVER['REQUEST_METHOD'] == 'GET' ? new GetRequest() : new PostRequest());
+$aux = explode('/', $request->request('request'));
+$controllerName = ((!empty($aux[0])) ? ucfirst($aux[0]) : 'NotFound') . 'Controller';
+$actionName = (!empty($aux[1])) ? strtolower($aux[1]) : 'index';
+$parameter = (!empty($aux[2])) ? $aux[2] : null;
+
+$controller = class_exists($controllerName) ? new $controllerName($request) : new NotFoundController($request);
+
+$controller->run($actionName, $parameter);
 
 /*
 $request = explode('/', $_GET['request']);
