@@ -1,5 +1,6 @@
 <?php
 
+namespace Flush\Core;
 
 class Controller {
 	public $name = null;
