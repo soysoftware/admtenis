@@ -6,7 +6,7 @@ namespace Flush\Core\HTTP;
  * @version 0.0.1
  */
 
-class Core_JsonResponse {
+class JsonResponse extends Response {
 	const	CODE_SUCCESS = 1;
 	const	CODE_ERROR = 2;
 	const	CODE_WARNING = 3;

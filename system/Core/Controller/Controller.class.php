@@ -1,8 +1,9 @@
 <?php
 
-namespace Flush\Core;
+namespace Flush\Core\Controller;
 
-class Controller {
+class Controller 
+{
 	public $name = null;
 	public $request;
 	public $response;
