@@ -16,7 +16,6 @@ abstract class TypedModel extends BaseModel {
 	
 	public function __construct($idObj = null, $readOnly = false){
 		$this->createAttributes();
-		BaseType::disableValidations();
 		parent::__construct($idObj, $readOnly);
 		BaseType::enableValidations();
 	}	

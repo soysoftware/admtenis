@@ -14,7 +14,7 @@ abstract class BaseType {
 	
 	const PREFIX = '\Flush\Type\\';
 
-	protected static $validationsEnabled = true;  
+	protected static $validationsEnabled = false;  
 	
 	protected	$constraints;
 	protected	$val;
