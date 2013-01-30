@@ -1,6 +1,6 @@
 <?php
 
-namespace Flush\Core;
+namespace Flush\Core\HTTP;
 
 class Request {
 	public final function server($var) {

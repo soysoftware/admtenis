@@ -1,9 +1,10 @@
 <?php
 	
+use Flush\Core\HTTP\Request;
 use Flush\Core\Model\Descriptor;
 use Flush\Core\Config;
 use Flush\Core\Modules\Cache\Drivers;
-
+	
 	# Definimos directorios basicos
 	define('SYSDIR', dirname(__FILE__));
 	define('ROOTDIR', ($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . current(explode(DIRECTORY_SEPARATOR, ltrim(str_ireplace($_SERVER['DOCUMENT_ROOT'], '', __FILE__),DIRECTORY_SEPARATOR), -1))));
@@ -61,7 +62,7 @@ use Flush\Core\Modules\Cache\Drivers;
 	}
 	
 	# Ejecucion de controller
-	$request = new Request();
+	$request = new Request($var);
 	$aux = explode('/', $request->request('request'));
 	$controllerName = ((!empty($aux[0])) ? ucfirst($aux[0]) : 'NotFound') . 'Controller';
 	$actionName = (!empty($aux[1])) ? strtolower($aux[1]) : 'index';

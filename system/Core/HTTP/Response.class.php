@@ -1,4 +1,5 @@
 <?php
+namespace Flush\Core\HTTP;
 /**
  * @author Lucas Ceballos
  * @since 11/02/2012

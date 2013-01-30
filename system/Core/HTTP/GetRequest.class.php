@@ -1,6 +1,6 @@
 <?php
 
-namespace Flush\Core;
+namespace Flush\Core\HTTP;
 
 class GetRequest {
 	public function __get($name) {
