@@ -4,9 +4,9 @@
  * @since 11/02/2012
  * @version 0.0.1
  */
-
-class Core_RelationalList extends Core_RelationalBase{
-	
+namespace Flush\Core\Model;
+class RelationalList extends RelationalBase
+{
 	private $referenceValue;
 	private	$_list;
 
@@ -47,7 +47,7 @@ class Core_RelationalList extends Core_RelationalBase{
 	    		}
 	    	} else {
 	    		//No existe, lo creo e inserto con action INSERT ya que es un objeto relacional nuevo
-		    	$relationalObject = new Core_RelationalObject($this->fromClass, $this->toClass);
+		    	$relationalObject = new RelationalObject($this->fromClass, $this->toClass);
 		    	$relationalObject->{$this->toPrimaryKeyName} = $object->id;
 		    	$relationalObject->{$this->fromPrimaryKeyName} = $this->referenceValue;
 	    		$relationalObject->action = self::INSERT_ACTION;
@@ -162,7 +162,5 @@ class Core_RelationalList extends Core_RelationalBase{
 		}
 		return true;
 	}
-
 }
-
 ?>

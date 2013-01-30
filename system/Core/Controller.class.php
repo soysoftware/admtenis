@@ -19,13 +19,13 @@ class Controller {
 			$method = new ReflectionMethod($this, $action);
 			if (!$method->isPublic()) {
 				//throw new PrivateActionException(array(
-				throw new Exception(array('controller' => $this->name . 'Controller', 'action' => $action));
+				throw new \Exception(array('controller' => $this->name . 'Controller', 'action' => $action));
 			}
 			$method->invoke($this, $parameter);
 			return $this->response;
-		} catch (ReflectionException $ex) {
+		} catch (\ReflectionException $ex) {
 			//throw new MissingActionException(array(
-			throw new Exception(array('controller' => $this->name . 'Controller', 'action' => $action));
+			throw new \Exception(array('controller' => $this->name . 'Controller', 'action' => $action));
 		}
 	}
 }

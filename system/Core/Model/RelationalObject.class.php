@@ -4,8 +4,11 @@
  * @since 11/02/2012
  * @version 0.0.1
  */
+namespace Flush\Core\Model;
 
-class Core_RelationalObject extends Core_RelationalBase {
+use Flush\Exception\InternalSecurityException;
+
+class RelationalObject extends RelationalBase {
 	
 	private $_action = self::NO_ACTION;
 	private $_object;
@@ -41,7 +44,7 @@ class Core_RelationalObject extends Core_RelationalBase {
 	protected function setAction($action){
 		// Chequeamos que el action enviado sea valido
 		if ( !preg_match('/' . self::DELETE_ACTION . '|' . self::INSERT_ACTION . '|' . self::NO_ACTION . '/', $action) ) {
-			throw new Exception_InternalSecurityException('El action enviado no es válido');
+			throw new InternalSecurityException('El action enviado no es válido');
 		}
 		$this->_action = $action;
 		return $this;

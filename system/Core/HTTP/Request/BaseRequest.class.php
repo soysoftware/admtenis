@@ -4,7 +4,6 @@ namespace Flush\Core\HTTP\Request;
 
 abstract class BaseRequest 
 {
-	
 	protected $data;
 	
 	public function __get($name){

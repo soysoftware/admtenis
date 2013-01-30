@@ -1,5 +1,9 @@
 <?php
-abstract class Core_RelationalBase {
+namespace Flush\Core\Model;
+use Flush\Exception\InternalApplicationException;
+
+abstract class RelationalBase 
+{
 	
 	const 	TABLE_GLUE = 'Por';
 	const 	NO_ACTION = 0;
@@ -20,12 +24,9 @@ abstract class Core_RelationalBase {
 	
 	public function __get($name) {
 		if (!method_exists($this, $method =  'get' . ucfirst($name))) {
-			throw new Exception_InternalApplicationException('No existe el método ' . $method . ' en la clase "' . get_class($this) . '"');
+			throw new InternalApplicationException('No existe el método ' . $method . ' en la clase "' . get_class($this) . '"');
 		}
 		return $this->$method();
 	}
-	
-	
-	
 }
 ?>
